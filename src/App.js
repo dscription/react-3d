@@ -1,8 +1,10 @@
-import './App.css';
 import React, { useState, useRef } from 'react';
 import { OrbitControls, Torus } from 'drei';
 import { Canvas, useThree, extend, useFrame } from 'react-three-fiber';
 import { a, useSpring } from 'react-spring/three';
+import { Controls, useControl } from 'react-three-gui';
+
+import './App.css';
 
 function Cube(props) {
   const [isBig, setIsBig] = useState(false);
@@ -11,7 +13,7 @@ function Cube(props) {
 
   useFrame(() => {
     ref.current.rotation.x += 0.01;
-    ref.current.rotation.y += 0.02;
+    ref.current.rotation.y += 0.01;
   });
 
   const { size, x } = useSpring({
@@ -19,7 +21,7 @@ function Cube(props) {
     x: isBig ? 2 : 0,
   });
 
-  const color = isHovered ? 'pink' : 'red';
+  const color = isHovered ? 'pink' : 'salmon';
 
   return (
     <a.mesh
@@ -34,17 +36,19 @@ function Cube(props) {
       onPointerOver={() => setIsHovered(true)}
     >
       <sphereBufferGeometry attach="geometry" args={[1, 8, 6]} />
-      <meshPhysicalMaterial
+      <meshPhongMaterial
+        flatShading={true}
         roughness={1}
         metalness={0.5}
-        clearcoat={1}
+        shininess={100}
         attach="material"
         color={color}
-        shineyness={100}
       />
     </a.mesh>
   );
 }
+// box args = [width, height, depth ]
+// sphere args = [width, height, depth ]
 
 function Plane() {
   return (
@@ -60,19 +64,29 @@ function Plane() {
 }
 
 function Scene() {
+  const positionX = useControl('Position X', {
+    type: 'number',
+    max: 10,
+    min: -10,
+  });
+  const color = useControl('Torus Color', {
+    type: 'color',
+    value: 'gold',
+  });
+
   return (
     <>
       <ambientLight />
       <spotLight castShadow={true} intensity={0.6} position={[0, 10, 4]} />
-      <Cube rotation={[10, 10, 0]} position={[0, 0, 0]} />
+      <Cube rotation={[10, 10, 0]} position={[positionX, 0, 0]} />
       <Cube rotation={[10, 20, 0]} position={[2, 2, 0]} />
-      <Torus args={[1, 0.2, 10, 30]} position={[-2, 1, 0]}>
+      <Torus args={[1, 0.2, 10, 30]} position={[-2, 1, -1]}>
         <meshPhongMaterial
           roughness={1}
           metalness={0.5}
           shininess={100}
           attach="material"
-          color={'gold '}
+          color={color}
         />
       </Torus>
       <Plane />
@@ -80,12 +94,18 @@ function Scene() {
     </>
   );
 }
-
+// camera={{
+//           position: [0, 0, 2],
+//         }}
+// position={[0, -1.2, 0]}
 function App() {
   return (
-    <Canvas shadowMap={true}>
-      <Scene />
-    </Canvas>
+    <>
+      <Canvas shadowMap={true}>
+        <Scene />
+      </Canvas>
+      <Controls />
+    </>
   );
 }
 
