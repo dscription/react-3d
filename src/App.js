@@ -1,110 +1,43 @@
-import React, { useState, useRef } from 'react';
-import { OrbitControls, Torus } from 'drei';
-import { Canvas, useThree, extend, useFrame } from 'react-three-fiber';
-import { a, useSpring } from 'react-spring/three';
-import { Controls, useControl } from 'react-three-gui';
-
+import * as THREE from 'three';
+import React, { useState, useRef, useEffect, Suspense } from 'react';
+import { OrbitControls } from 'drei';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { Canvas, useFrame, useLoader } from 'react-three-fiber';
 import './App.css';
 
-function Cube(props) {
-  const [isBig, setIsBig] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
+// https://sketchfab.com/3d-models/indoorflower-241421729f38400cad10e6905bbb0de5
+function Plant() {
   const ref = useRef();
+  const gltf = useLoader(GLTFLoader, '/scene.gltf');
 
-  useFrame(() => {
-    ref.current.rotation.x += 0.01;
-    ref.current.rotation.y += 0.01;
-  });
-
-  const { size, x } = useSpring({
-    size: isBig ? [2, 2, 2] : [1, 1, 1],
-    x: isBig ? 2 : 0,
-  });
-
-  const color = isHovered ? 'pink' : 'salmon';
-
-  return (
-    <a.mesh
-      {...props}
-      ref={ref}
-      scale={size}
-      position-x={x}
-      castShadow={true}
-      receiveShadow={true}
-      onClick={() => setIsBig(!isBig)}
-      onPointerOut={() => setIsHovered(false)}
-      onPointerOver={() => setIsHovered(true)}
-    >
-      <sphereBufferGeometry attach="geometry" args={[1, 8, 6]} />
-      <meshPhongMaterial
-        flatShading={true}
-        roughness={1}
-        metalness={0.5}
-        shininess={100}
-        attach="material"
-        color={color}
-      />
-    </a.mesh>
-  );
-}
-// box args = [width, height, depth ]
-// sphere args = [width, height, depth ]
-
-function Plane() {
-  return (
-    <mesh
-      receiveShadow={true}
-      rotation={[-Math.PI / 2, 0, 0]}
-      position={[0, -2, -5]}
-    >
-      <planeBufferGeometry attach="geometry" args={[20, 20]} />
-      <meshPhongMaterial attach="material" color="#D3D3D3" />
-    </mesh>
-  );
+  return <primitive object={gltf.scene} position={[0, 0, 0]} />;
 }
 
 function Scene() {
-  const positionX = useControl('Position X', {
-    type: 'number',
-    max: 10,
-    min: -10,
-  });
-  const color = useControl('Torus Color', {
-    type: 'color',
-    value: 'gold',
-  });
-
   return (
     <>
       <ambientLight />
-      <spotLight castShadow={true} intensity={0.6} position={[0, 10, 4]} />
-      <Cube rotation={[10, 10, 0]} position={[positionX, 0, 0]} />
-      <Cube rotation={[10, 20, 0]} position={[2, 2, 0]} />
-      <Torus args={[1, 0.2, 10, 30]} position={[-2, 1, -1]}>
-        <meshPhongMaterial
-          roughness={1}
-          metalness={0.5}
-          shininess={100}
-          attach="material"
-          color={color}
-        />
-      </Torus>
-      <Plane />
+      <pointLight intensity={0.6} position={[0, 10, 4]} />
+      <Suspense fallback={null}>
+        <Plant />
+      </Suspense>
       <OrbitControls />
     </>
   );
 }
-// camera={{
-//           position: [0, 0, 2],
-//         }}
-// position={[0, -1.2, 0]}
+
 function App() {
   return (
     <>
-      <Canvas shadowMap={true}>
+      <Canvas
+        camera={{
+          position: [0, 0, 15],
+          near: 1,
+          far: 40,
+        }}
+      >
         <Scene />
       </Canvas>
-      <Controls />
     </>
   );
 }
