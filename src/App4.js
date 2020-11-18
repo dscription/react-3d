@@ -14,7 +14,7 @@ function Plant() {
     // ref.current.rotation.x += 0.01;
     ref.current.rotation.y += 0.01;
   });
-  return <primitive position={[0, -1.2, 0]} ref={ref} object={gltf.scene} />;
+  return <primitive ref={ref} object={gltf.scene} position={[0, 0, 0]} />;
 }
 
 function Scene() {
@@ -25,7 +25,7 @@ function Scene() {
       <Suspense fallback={null}>
         <Plant />
       </Suspense>
-      {/* <OrbitControls /> */}
+      <OrbitControls />
     </>
   );
 }
@@ -33,19 +33,15 @@ function Scene() {
 function App() {
   return (
     <>
-      <h1>Plant</h1>
       <Canvas
         camera={{
-          position: [0, 0, 2],
+          position: [0, 0, 15],
+          near: 1,
+          far: 40,
         }}
-        style={{ height: '40vh' }}
       >
         <Scene />
       </Canvas>
-      <main>
-        <h3>You can buy plant</h3>
-        <button>Buy Plant</button>
-      </main>
     </>
   );
 }

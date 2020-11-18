@@ -14,3 +14,36 @@ body,
 body {
   background: lightpink;
 }
+
+
+h1 {
+  font-size: 8rem;
+  text-align: center;
+  color: #0a3d01;
+  margin-bottom:0;
+}
+
+/* canvas {
+  border: solid 1px blue;
+} */
+
+main {
+  padding: 1rem 10% 20rem;
+  background: white;
+  text-align: center;
+  margin-top: -80px;
+}
+
+h3 {
+  font-size: 4rem;
+}
+
+button {
+  background: lightpink;
+  font-size: 2rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 15px;
+  padding: 8px 20px;
+  box-shadow: 1px 1px 6px rgba(0,0,0,0.2);
+}
